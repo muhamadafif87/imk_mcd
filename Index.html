@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>McDonald's Kiosk</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Main App Container (Simulating Kiosk Screen) -->
+    <div id="app" class="w-full h-full sm:h-[90vh] sm:max-h-[900px] sm:max-w-[500px] bg-[#F8F9FA] relative overflow-hidden sm:rounded-3xl shadow-2xl flex flex-col">
+
+        <!-- Global Toast Notification -->
+        <div id="toast" class="fixed inset-0 z-50 hidden items-center justify-center bg-white/15 backdrop-blur-[1px]">
+            <div class="toast-panel w-[440px] max-w-[90vw] rounded-[32px] bg-white px-8 py-8 shadow-[0_30px_80px_rgba(15,23,42,0.18)] border border-[#F3F4F6]">
+                <div class="relative flex items-center justify-center mb-7">
+                    <div class="w-20 h-20 rounded-full bg-white border-4 border-[#F5F5F5] shadow-md flex items-center justify-center overflow-hidden">
+                        <img src="assets/icons/MCDlogo.webp" class="w-full h-full object-contain" alt="McDonald's Logo">
+                    </div>
+                    <div class="absolute top-0 right-32 w-10 h-10 bg-[#FFC72C] rounded-full border-4 border-white shadow-md flex items-center justify-center text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16">
+                            <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="flex flex-col items-center justify-center text-center">
+                    <h3 id="toast-title" class="font-bold text-[40px] leading-none text-slate-800 tracking-tight">Menu ditambahkan dalam pesanan</h3>
+                    <p id="toast-subtitle" class="mt-5 text-[24px] font-light text-slate-600 leading-tight">Jumlah Total telah diperbaharui</p>
+                    <p id="toast-total" class="mt-[30px] text-[32px] font-bold text-slate-900 leading-none">Rp 0</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- SCREEN 1: START (PILIH JENIS PESANAN)      -->
+        <!-- ========================================== -->
+        <div id="screen-start" class="screen-view h-full flex flex-col p-6 animate-fade-in relative">
+            
+            <!-- Header -->
+            <div class="flex items-center justify-between mt-4 mb-8">
+                <div class="flex items-center gap-3">
+                    <!-- PLACEHOLDER LOGO MCDONALDS -->
+                    <div class="w-10 h-10 flex items-center justify-center">
+                        <img src="assets/icons/MCDlogo.webp" class="w-full h-full object-contain" alt="McDonald's Logo"> 
+                    </div>
+                    <span class="font-bold text-xl text-slate-800 tracking-tight">McDonald's</span>
+                </div>
+                <!-- Language Selector -->
+                <div class="flex items-center gap-1 text-sm font-semibold text-slate-700 cursor-pointer">
+                    Bahasa 
+                    <span class="text-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-down-fill" viewBox="0 0 16 16">
+                            <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
+                        </svg>
+                    </span>
+                </div>
+            </div>
+
+            <!-- Title -->
+            <div class="mb-8">
+                <h1 class="text-3xl font-extrabold text-slate-900 mb-2">Pilih Jenis Pesanan</h1>
+                <p class="text-slate-500 text-lg">Makan di tempat atau dibawa pulang?</p>
+            </div>
+
+            <!-- Order Type Cards -->
+            <div class="grid grid-cols-2 gap-4 h-64 mb-auto">
+                
+                <!-- DINE IN CARD -->
+                <button id="btn-dine-in" onclick="selectOrderType('dine_in')" class="relative flex flex-col items-center justify-center p-6 rounded-3xl transition-all duration-300 bg-white border-2 border-transparent soft-shadow hover:shadow-md">
+                    <!-- PLACEHOLDER ICON DINE IN (Garpu & Pisau) -->
+                    <div class="w-16 h-16 mb-4 flex items-center justify-center">
+                        <img src="assets/icons/fork_Knife.png" class="w-full h-full object-contain" alt="Dine In Icon"> 
+                    </div>
+                    <h2 class="text-xl font-bold text-slate-800">DINE IN</h2>
+                    <p class="text-sm text-slate-500 mt-1">Makan di tempat</p>
+                    <div class="selected-badge hidden mt-3 bg-[#FFC72C] text-slate-900 text-xs font-bold px-4 py-1.5 rounded-full">TERPILIH</div>
+                    
+                    <!-- Checkmark Icon (Top Right) -->
+                    <div class="check-icon hidden absolute top-4 right-4 bg-[#FFC72C] text-white rounded-full p-1 w-6 h-6 flex items-center justify-center font-bold text-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16">
+                            <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+                        </svg>
+                    </div>
+                </button>
+
+                <!-- TAKEAWAY CARD -->
+                <button id="btn-takeaway" onclick="selectOrderType('takeaway')" class="relative flex flex-col items-center justify-center p-6 rounded-3xl transition-all duration-300 bg-white border-2 border-transparent soft-shadow hover:shadow-md">
+                    <!-- PLACEHOLDER ICON TAKEAWAY (Tas Belanja) -->
+                    <div class="w-16 h-16 mb-4 bg-gray-100 rounded-xl flex items-center justify-center">
+                        <img src="assets/icons/takeaway.webp" class="w-full h-full object-contain" alt="Takeaway Icon">   
+                    </div>
+                    <h2 class="text-xl font-bold text-slate-800">TAKEAWAY</h2>
+                    <p class="text-sm text-slate-500 mt-1">Bawa pulang</p>
+                    <div class="selected-badge hidden mt-3 bg-[#FFC72C] text-slate-900 text-xs font-bold px-4 py-1.5 rounded-full">TERPILIH</div>
+                    
+                    <!-- Checkmark Icon (Top Right) -->
+                    <div class="check-icon hidden absolute top-4 right-4 bg-[#FFC72C] text-white rounded-full p-1 w-6 h-6 flex items-center justify-center font-bold text-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16">
+                            <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+                        </svg>
+                    </div>
+                </button>
+
+            </div>
+
+            <!-- Continue Button -->
+            <button id="btn-continue-start" onclick="goToMenu()" disabled class="w-full py-5 rounded-xl text-lg font-bold transition-all duration-300 flex items-center justify-center gap-2 bg-gray-200 text-gray-400 cursor-not-allowed opacity-50 mt-4">
+                LANJUTKAN
+                <span class="font-bold text-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"/>
+                    </svg>
+                </span>
+            </button>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- SCREEN 2: MENU UTAMA                       -->
+        <!-- ========================================== -->
+        <div id="screen-menu" class="screen-view h-full flex flex-col animate-fade-in relative hidden">
+            
+            <!-- Header Fixed -->
+            <div class="px-6 pt-6 pb-2 bg-white z-10 shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)]">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-2">
+                        <!-- PLACEHOLDER LOGO MCDONALDS -->
+                        <div class="w-8 h-8 rounded flex items-center justify-center">
+                            <img src="assets/icons/MCDlogo.webp" alt="McDonald's Logo">
+                        </div>
+                        <span class="font-bold text-lg text-slate-800">McDonald's</span>
+                    </div>
+                    <!-- Search Bar -->
+                    <div class="relative w-48">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <span class="text-gray-400 text-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                                </svg>
+                            </span> 
+                        </div>
+                        <input type="text" id="search-input" placeholder="Cari menu..." oninput="handleSearch()" class="w-full pl-9 pr-4 py-2 bg-gray-100 border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FFC72C] text-sm transition-all border border-gray-200">
+                    </div>
+                </div>
+
+                <!-- Categories -->
+                <div id="category-tabs" class="flex overflow-x-auto pb-2 hide-scrollbar gap-2 -mx-2 px-2 mt-4">
+                    <!-- Dinamis via JS -->
+                </div>
+            </div>
+
+            <!-- Product Grid -->
+            <div id="product-grid" class="flex-1 overflow-y-auto p-6 pb-32 grid grid-cols-2 gap-4 align-start items-start">
+                <!-- Dinamis via JS -->
+            </div>
+
+            <!-- Persistent Cart Bottom Bar -->
+            <div id="persistent-cart" class="absolute bottom-0 left-0 w-full bg-white px-6 py-5 bottom-bar-shadow rounded-t-3xl flex items-center justify-between z-20 transition-transform duration-300 translate-y-full">
+                <div class="flex items-center gap-3">
+                    <div class="relative">
+                        <!-- PLACEHOLDER CART ICON -->
+                        <div class="w-8 h-8 rounded flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart4" viewBox="0 0 16 16">
+                            <path d="M0 2.5A.5.5 0 0 1 .5 2H2a.5.5 0 0 1 .485.379L2.89 4H14.5a.5.5 0 0 1 .485.621l-1.5 6A.5.5 0 0 1 13 11H4a.5.5 0 0 1-.485-.379L1.61 3H.5a.5.5 0 0 1-.5-.5M3.14 5l.5 2H5V5zM6 5v2h2V5zm3 0v2h2V5zm3 0v2h1.36l.5-2zm1.11 3H12v2h.61zM11 8H9v2h2zM8 8H6v2h2zM5 8H3.89l.5 2H5zm0 5a1 1 0 1 0 0 2 1 1 0 0 0 0-2m-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0m9-1a1 1 0 1 0 0 2 1 1 0 0 0 0-2m-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div>
+                        <p class="font-bold text-slate-800 text-sm leading-none"><span id="cart-item-count">0</span> ITEM</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <span id="cart-total-price" class="font-extrabold text-slate-900 text-xl">Rp 0</span>
+                    <button onclick="goToCart()" class="bg-[#FFC72C] hover:bg-[#F2B922] text-slate-900 px-5 py-3 rounded-xl font-bold flex items-center gap-2 shadow-lg transition-transform active:scale-95 text-sm">
+                        LIHAT PESANAN
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- SCREEN 3: CUSTOMIZATION                    -->
+        <!-- ========================================== -->
+        <div id="screen-customize" class="screen-view h-full flex flex-col animate-fade-in relative hidden bg-white">
+            
+            <!-- Header -->
+            <div class="px-6 py-5 bg-white flex items-center justify-between border-b border-gray-100 z-10">
+                <button onclick="goToMenu()" class="flex items-center gap-2 text-slate-600 font-bold text-sm hover:text-slate-900">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
+                    </svg>
+                    KEMBALI
+                </button>
+                <span class="font-bold text-slate-800 uppercase tracking-wider text-sm justify-center">CUSTOMIZE</span>
+                <!-- PLACEHOLDER LOGO -->
+                <div class="w-6 h-6 rounded flex items-center justify-center">
+                    <img src="assets/icons/MCDlogo.webp" alt="McDonald's Logo">
+                </div>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-6 pb-32 bg-[#F8F9FA]">
+                <!-- Main Product Visual -->
+                <div class="flex flex-col items-center justify-center mb-8">
+                    <!-- PLACEHOLDER GAMBAR PRODUK BESAR -->
+                    <div class="w-48 h-48 rounded-xl flex flex-col items-center justify-center border-2 mb-4 overflow-hidden relative">
+                        <img id="custom-product-img" src="" alt="Product" class="absolute inset-0 w-full h-full object-cover z-20 mix-blend-multiply bg-transparent">
+                    </div>
+                    <h2 id="custom-product-name" class="text-2xl font-extrabold text-slate-900">Nama Produk</h2>
+                    <p id="custom-product-price" class="text-lg font-semibold text-slate-600 mt-1">Rp 0</p>
+                </div>
+
+                <!-- Options: Size -->
+                <div class="mb-8">
+                    <h3 class="font-bold text-slate-800 mb-3 text-sm">Pilih Ukuran</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        
+                        <button id="btn-size-regular" onclick="selectSize('Regular')" class="size-btn p-4 rounded-xl border-2 border-[#FFC72C] bg-[#FFF9E5] transition-all flex flex-col items-center gap-2 relative">
+                            <span class="font-bold text-slate-700">Regular</span>
+                            <div class="check-icon absolute top-2 right-2 bg-[#FFC72C] text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16">
+                                    <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+                                </svg>
+                            </div>
+                        </button>
+                        
+                        <button id="btn-size-large" onclick="selectSize('Large')" class="size-btn p-4 rounded-xl border-2 border-gray-100 bg-white shadow-sm transition-all flex flex-col items-center gap-2 relative">
+                            <span class="font-bold text-slate-700">Large</span>
+                            <div class="check-icon hidden absolute top-2 right-2 bg-[#FFC72C] text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16">
+                                    <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+                                </svg>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Options: Sauce -->
+                <div class="mb-6">
+                    <h3 class="font-bold text-slate-800 mb-3 text-sm">Pilih Saus</h3>
+                    <div class="bg-white rounded-xl p-4 card-shadow border border-gray-50 flex justify-between items-center">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="sauce" value="BBQ" onchange="selectSauce('BBQ')" class="custom-radio">
+                            <span class="text-sm font-medium text-slate-700">BBQ</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="sauce" value="Tomato" onchange="selectSauce('Tomato')" class="custom-radio" checked>
+                            <span class="text-sm font-medium text-slate-700">Tomato</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="sauce" value="Chili" onchange="selectSauce('Chili')" class="custom-radio">
+                            <span class="text-sm font-medium text-slate-700">Chili</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Bottom Bar -->
+            <div class="absolute bottom-0 left-0 w-full bg-white px-6 py-5 bottom-bar-shadow z-20 flex gap-4 rounded-t-3xl">
+                <button onclick="goToMenu()" class="flex-1 py-4 rounded-xl font-bold bg-gray-100 text-slate-600 hover:bg-gray-200 transition-colors text-sm">
+                    KEMBALI
+                </button>
+                <button onclick="saveCustomization()" class="flex-[2] py-4 rounded-xl font-bold bg-[#FFC72C] text-slate-900 hover:bg-[#F2B922] transition-colors shadow-lg text-sm">
+                    SIMPAN PILIHAN
+                </button>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- SCREEN 4: CART (PESANAN ANDA)              -->
+        <!-- ========================================== -->
+        <div id="screen-cart" class="screen-view h-full flex flex-col animate-fade-in relative hidden bg-[#F8F9FA]">
+            
+            <!-- Header -->
+            <div class="px-6 py-5 bg-white flex items-center justify-between border-b border-gray-100 z-10">
+                <button onclick="goToMenu()" class="flex items-center gap-2 text-slate-600 font-bold text-sm hover:text-slate-900">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+  <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
+</svg>
+                    KEMBALI
+                </button>
+                <span class="font-bold text-slate-800 uppercase tracking-wider text-sm">PESANAN ANDA</span>
+                <!-- PLACEHOLDER LOGO -->
+                <div class="w-6 h-6 rounded flex items-center justify-center">
+                    <img src="assets/icons/MCDlogo.webp" class="w-full h-full object-contain" alt="McDonald's Logo">
+                </div>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-6 pb-48">
+                <h2 class="text-lg font-bold text-slate-800 mb-4">PESANAN</h2>
+                
+                <!-- Cart Items List -->
+                <div id="cart-list" class="flex flex-col gap-3">
+                    <!-- Dinamis via JS -->
+                </div>
+
+                <!-- Summary Block -->
+                <div class="bg-white rounded-2xl p-6 mt-6 card-shadow border border-gray-50">
+                    <div class="flex justify-between text-slate-500 mb-3 text-sm">
+                        <span>Subtotal</span>
+                        <span id="summary-subtotal">Rp 0</span>
+                    </div>
+                    <div class="flex justify-between text-slate-500 mb-4 pb-4 border-b border-gray-100 text-sm">
+                        <span>Pajak (10%)</span>
+                        <span id="summary-tax">Rp 0</span>
+                    </div>
+                    <div class="flex justify-between items-end">
+                        <span class="font-bold text-lg text-slate-900">TOTAL</span>
+                        <span id="summary-total" class="font-extrabold text-2xl text-slate-900">Rp 0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Bottom Bar -->
+            <div class="absolute bottom-0 left-0 w-full bg-white px-6 py-5 bottom-bar-shadow z-20 flex gap-4 rounded-t-3xl">
+                <button onclick="resetOrder()" class="flex-1 py-4 rounded-xl font-bold bg-gray-100 text-slate-600 hover:bg-gray-200 transition-colors text-xs whitespace-nowrap">
+                    MULAI DARI AWAL
+                </button>
+                <button onclick="checkout()" class="flex-[2] py-4 rounded-xl font-bold bg-[#FFC72C] text-slate-900 hover:bg-[#F2B922] transition-colors shadow-lg flex justify-center items-center gap-2 text-sm">
+                    SELESAIKAN PESANAN
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- SCREEN 5: CONFIRMATION                     -->
+        <!-- ========================================== -->
+        <div id="screen-confirmation" class="screen-view h-full flex flex-col p-6 animate-fade-in relative hidden bg-white">
+
+            <div class="flex-1 flex flex-col items-center text-center mt-4">
+                
+                <!-- PLACEHOLDER SUCCESS ICON (Centang Hijau) -->
+                <div class="w-24 h-24 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-6 border border-green-500 relative">
+                    <svg class="w-12 h-12 z-10 bg-green-600 text-white rounded-full p-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </div>
+                
+                <h1 class="text-2xl font-extrabold text-slate-900 mb-2">PESANAN BERHASIL</h1>
+                <p class="text-slate-500 mb-6 text-sm">Nomor antrean Anda:</p>
+
+                <!-- Ticket -->
+                <div class="bg-gray-100 px-16 py-8 rounded-2xl border border-gray-200 mb-8 relative">
+                    <!-- Ticket cutouts -->
+                    <div class="absolute left-0 top-1/2 w-6 h-6 bg-white rounded-full -translate-x-3 -translate-y-3"></div>
+                    <div class="absolute right-0 top-1/2 w-6 h-6 bg-white rounded-full translate-x-3 -translate-y-3"></div>
+                    
+                    <span id="queue-number" class="text-5xl font-black text-slate-800 tracking-wider">A-127</span>
+                </div>
+
+                <p class="text-slate-500 text-sm leading-relaxed max-w-[250px]">
+                    Silakan menunggu pesanan Anda di area pengambilan.
+                </p>
+            </div>
+
+            <button onclick="finishOrder()" class="w-full py-4 rounded-xl font-bold bg-[#FFC72C] text-slate-900 hover:bg-[#F2B922] transition-colors shadow-lg text-lg mt-auto mb-4">
+                SELESAI
+            </button>
+        </div>
+
+    </div>
+
+    <!-- ========================================== -->
+    <!-- JAVASCRIPT LOGIC                           -->
+    <!-- ========================================== -->
+    <script>
+        // --- Utils ---
+        const formatIDR = (amount) => {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 0
+            }).format(amount);
+        };
+
+        // --- State ---
+        let currentScreen = 'start';
+        let orderType = null;
+        let cart = [];
+        let activeCategory = 'Burger';
+        let searchQuery = '';
+        
+        // State Kustomisasi
+        let selectedProduct = null;
+        let customSize = 'Regular';
+        let customSauce = 'Tomato';
+
+        function getCartTotals() {
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const tax = subtotal * 0.10;
+            const total = subtotal + tax;
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            return { subtotal, tax, total, totalItems };
+        }
+
+        // --- Data Menu ---
+        const MENU_CATEGORIES = ['Burger', 'Ayam', 'Minuman', 'Snack', 'Dessert'];
+        const MENU_DATA = [
+            { id: 'b1', category: 'Burger', name: 'Big Mac', basePrice: 40000, customizable: true,
+              image: 'https://s7d1.scene7.com/is/image/mcdonalds/DC_202302_0005-999_BigMac_1564x1564-1:product-header-mobile?wid=1313&hei=1313&dpr=off' 
+            },
+            { id: 'b2', category: 'Burger', name: 'Cheeseburger', basePrice: 28000, customizable: true,
+              image: 'https://s7d1.scene7.com/is/image/mcdonalds/mcdonalds-cheeseburger-april-promo:product-header-mobile?wid=829&hei=478&dpr=off' 
+            },
+            { id: 'b3', category: 'Burger', name: 'McChicken', basePrice: 32000, customizable: true,
+              image: 'https://s7d1.scene7.com/is/image/mcdonalds/DC_202302_4314-999_McChicken_1564x1564-1:product-header-mobile?wid=1313&hei=1313&dpr=off' 
+            },
+            { id: 'a1', category: 'Ayam', name: 'Ayam Krispy', basePrice: 22000, customizable: false,
+              image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRaUQ1m7FOJF50U-8R8wZz30zoq5pUu5_Kk8liCUYXsF2bcvAT8LcbulGDe&s=10' 
+            },
+            { id: 's1', category: 'Snack', name: 'McNuggets', basePrice: 30000, customizable: false,
+              image: 'https://nilaigizi.com/assets/images/produk/produk_1582690340.jpg'
+            },
+            { id: 's2', category: 'Snack', name: 'French Fries', basePrice: 24000, customizable: true,
+              image: 'https://asset.kompas.com/crops/c-1pEkIfGM4KIKWr73GDyym4RaE=/62x0:746x456/1200x900/data/photo/2022/02/01/61f954e150b0b.jpg' 
+            }
+        ];
+
+        
+        // --- Navigation ---
+        function switchScreen(screenId) {
+            document.querySelectorAll('.screen-view').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`screen-${screenId}`).classList.remove('hidden');
+            currentScreen = screenId;
+        }
+
+        // --- Screen 1: Start ---
+        function selectOrderType(type) {
+            orderType = type;
+            
+            // Reset styles
+            document.getElementById('btn-dine-in').classList.remove('border-[#FFC72C]', 'bg-[#FFF9E5]', 'scale-[1.02]');
+            document.getElementById('btn-takeaway').classList.remove('border-[#FFC72C]', 'bg-[#FFF9E5]', 'scale-[1.02]');
+            document.querySelectorAll('.selected-badge, .check-icon').forEach(el => el.classList.add('hidden'));
+
+            // Apply selected styles
+            const activeBtn = document.getElementById(type === 'dine_in' ? 'btn-dine-in' : 'btn-takeaway');
+            activeBtn.classList.add('border-[#FFC72C]', 'bg-[#FFF9E5]', 'scale-[1.02]');
+            activeBtn.querySelectorAll('.selected-badge, .check-icon').forEach(el => el.classList.remove('hidden'));
+
+            // Enable continue button
+            const continueBtn = document.getElementById('btn-continue-start');
+            continueBtn.disabled = false;
+            continueBtn.classList.remove('bg-gray-200', 'text-gray-400', 'opacity-50', 'cursor-not-allowed');
+            continueBtn.classList.add('bg-[#FFC72C]', 'text-slate-900', 'shadow-xl');
+        }
+
+        function goToMenu() {
+            if(!orderType && currentScreen === 'start') return;
+            switchScreen('menu');
+            renderCategoryTabs();
+            renderMenuItems();
+            updateCartUI();
+        }
+
+        // --- Screen 2: Menu ---
+        function renderCategoryTabs() {
+            const container = document.getElementById('category-tabs');
+            if(searchQuery) {
+                container.innerHTML = '';
+                return;
+            }
+
+            container.innerHTML = MENU_CATEGORIES.map(cat => `
+                <button onclick="setCategory('${cat}')" 
+                    class="px-5 py-2 rounded-full whitespace-nowrap text-sm font-bold transition-all duration-300 border ${
+                    activeCategory === cat 
+                        ? 'bg-[#FFC72C] text-slate-900 border-[#FFC72C] shadow-md' 
+                        : 'bg-white text-slate-500 border-gray-200 hover:bg-gray-50'
+                }">
+                    ${cat}
+                </button>
+            `).join('');
+        }
+
+        function setCategory(cat) {
+            activeCategory = cat;
+            document.getElementById('search-input').value = '';
+            searchQuery = '';
+            renderCategoryTabs();
+            renderMenuItems();
+        }
+
+        function handleSearch() {
+            searchQuery = document.getElementById('search-input').value.toLowerCase();
+            renderCategoryTabs();
+            renderMenuItems();
+        }
+
+        function renderMenuItems() {
+            const container = document.getElementById('product-grid');
+            const filtered = MENU_DATA.filter(item => {
+                const matchSearch = item.name.toLowerCase().includes(searchQuery);
+                const matchCategory = searchQuery ? true : item.category === activeCategory;
+                return matchSearch && matchCategory;
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<div class="col-span-2 text-center text-gray-500 mt-10 text-sm">Pencarian tidak ditemukan.</div>`;
+                return;
+            }
+
+            container.innerHTML = filtered.map(product => `
+                <div class="bg-white rounded-2xl p-3 flex flex-col card-shadow border border-gray-50 h-full">
+                    <!-- PLACEHOLDER GAMBAR KARTU PRODUK -->
+                    <div class="h-40 mb-3 rounded-xl overflow-hidden bg-gray-100 flex items-center justify-center border border-gray-300 relative">
+                        <span class="text-[10px] text-gray-400 font-bold z-10 text-center">FOTO<br>${product.name}</span>
+                        ${product.image ? `<img src="${product.image}" class="absolute inset-0 w-full h-full object-cover z-20">` : ''}
+                    </div>
+                    
+                    <h3 class="font-bold text-slate-800 text-sm leading-tight mb-1">${product.name}</h3>
+                    <p class="text-xs font-semibold text-slate-600 mb-3">${formatIDR(product.basePrice)}</p>
+                    
+                    <div class="mt-auto">
+                        <button onclick='handleProductClick(${JSON.stringify(product)})' class="w-full py-2 rounded-lg text-xs font-bold bg-[#FFC72C] hover:bg-[#F2B922] text-slate-900 transition-colors flex justify-center items-center gap-1">
+                            <span>+</span> TAMBAH
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+
+        function handleProductClick(product) {
+            if (product.customizable) {
+                selectedProduct = product;
+                customSize = 'Regular';
+                customSauce = 'Tomato';
+                setupCustomizeScreen();
+                switchScreen('customize');
+            } else {
+                addToCart(product, 1, 'Regular', 'None');
+            }
+        }
+
+        // --- Screen 3: Customize ---
+        function setupCustomizeScreen() {
+            document.getElementById('custom-product-name').textContent = selectedProduct.name;
+            document.getElementById('custom-product-price').textContent = formatIDR(selectedProduct.basePrice);
+            
+            // Set image if available (else placeholder text remains visible underneath)
+            const imgEl = document.getElementById('custom-product-img');
+            if(selectedProduct.image) {
+                imgEl.src = selectedProduct.image;
+                imgEl.classList.remove('hidden');
+            } else {
+                imgEl.classList.add('hidden');
+            }
+
+            selectSize('Regular');
+            
+            // Reset sauce radios
+            document.querySelectorAll('input[name="sauce"]').forEach(radio => {
+                if(radio.value === 'Tomato') radio.checked = true;
+            });
+        }
+
+        function selectSize(size) {
+            customSize = size;
+            const isReg = size === 'Regular';
+            
+            const btnReg = document.getElementById('btn-size-regular');
+            const btnLrg = document.getElementById('btn-size-large');
+            
+            // Reset
+            btnReg.className = "size-btn p-4 rounded-xl border-2 border-gray-100 bg-white shadow-sm transition-all flex flex-col items-center gap-2 relative";
+            btnLrg.className = "size-btn p-4 rounded-xl border-2 border-gray-100 bg-white shadow-sm transition-all flex flex-col items-center gap-2 relative";
+            btnReg.querySelector('.check-icon').classList.add('hidden');
+            btnLrg.querySelector('.check-icon').classList.add('hidden');
+
+            // Apply
+            const activeBtn = isReg ? btnReg : btnLrg;
+            activeBtn.className = "size-btn p-4 rounded-xl border-2 border-[#FFC72C] bg-[#FFF9E5] transition-all flex flex-col items-center gap-2 relative";
+            activeBtn.querySelector('.check-icon').classList.remove('hidden');
+
+            // Update price preview
+            let price = selectedProduct.basePrice;
+            if(size === 'Large') price += 5000;
+            document.getElementById('custom-product-price').textContent = formatIDR(price);
+        }
+
+        function selectSauce(sauce) {
+            customSauce = sauce;
+        }
+
+        function saveCustomization() {
+            addToCart(selectedProduct, 1, customSize, customSauce);
+            goToMenu();
+            const { total } = getCartTotals();
+            showToast('Menu ditambahkan dalam pesanan', formatIDR(total));
+        }
+
+        // --- Cart Logic ---
+        function addToCart(product, quantity, size, sauce) {
+            let finalPrice = product.basePrice;
+            if (size === 'Large') finalPrice += 5000;
+
+            const existingIndex = cart.findIndex(item => item.productId === product.id && item.size === size && item.sauce === sauce);
+
+            if (existingIndex >= 0) {
+                cart[existingIndex].quantity += quantity;
+            } else {
+                cart.push({
+                    id: Date.now().toString(),
+                    productId: product.id,
+                    name: product.name,
+                    price: finalPrice,
+                    quantity: quantity,
+                    size: size,
+                    sauce: sauce,
+                    image: product.image
+                });
+            }
+            
+            const { total } = getCartTotals();
+            if(currentScreen === 'menu') showToast('Menu ditambahkan dalam pesanan', formatIDR(total));
+            updateCartUI();
+        }
+
+        function updateCartQuantity(id, delta) {
+            const item = cart.find(i => i.id === id);
+            if (item) {
+                item.quantity += delta;
+                if (item.quantity <= 0) {
+                    cart = cart.filter(i => i.id !== id);
+                }
+            }
+
+            const { total } = getCartTotals();
+            showToast('Item dihapus', formatIDR(total));
+            updateCartUI();
+            if(currentScreen === 'cart') renderCartList();
+        }
+
+        function removeCartItem(id) {
+            cart = cart.filter(i => i.id !== id);
+            const { total } = getCartTotals();
+            showToast('Item berhasil dihapus', formatIDR(total));
+            updateCartUI();
+            renderCartList();
+        }
+
+        function updateCartUI() {
+            const { totalItems, subtotal } = getCartTotals();
+            
+            // Bottom Bar on Menu Screen
+            const bottomBar = document.getElementById('persistent-cart');
+            if (totalItems > 0 && currentScreen === 'menu') {
+                bottomBar.classList.remove('translate-y-full');
+                document.getElementById('cart-item-count').textContent = totalItems;
+                document.getElementById('cart-total-price').textContent = formatIDR(subtotal + (subtotal * 0.1));
+            } else {
+                bottomBar.classList.add('translate-y-full');
+            }
+        }
+
+        // --- Screen 4: Cart ---
+        function goToCart() {
+            switchScreen('cart');
+            renderCartList();
+            
+            // Hide bottom bar from menu explicitly
+            document.getElementById('persistent-cart').classList.add('translate-y-full');
+        }
+
+        function renderCartList() {
+            const container = document.getElementById('cart-list');
+            
+            if (cart.length === 0) {
+                container.innerHTML = `<div class="text-center py-10 text-gray-500 text-sm">Keranjang pesanan kosong.</div>`;
+                document.getElementById('summary-subtotal').textContent = 'Rp 0';
+                document.getElementById('summary-tax').textContent = 'Rp 0';
+                document.getElementById('summary-total').textContent = 'Rp 0';
+                return;
+            }
+
+            container.innerHTML = cart.map(item => `
+                <div class="bg-white rounded-2xl p-3 flex gap-3 items-center border border-gray-100 card-shadow">
+                    <!-- PLACEHOLDER FOTO DI KERANJANG -->
+                    <div class="w-16 h-16 bg-gray-100 rounded-lg flex-shrink-0 flex items-center justify-center border-gray-300 relative overflow-hidden">
+                        <span class="text-[8px] text-gray-400 font-bold z-10 text-center">FOTO</span>
+                        ${item.image ? `<img src="${item.image}" class="absolute inset-0 w-full h-full object-cover z-20">` : ''}
+                    </div>
+                    
+                    <div class="flex-1">
+                        <h3 class="font-bold text-slate-900 text-sm leading-tight">${item.name}</h3>
+                        <p class="text-[10px] text-gray-500 mt-0.5">${item.size}${item.sauce !== 'None' ? ` • ${item.sauce} Sauce` : ''}</p>
+                        
+                        <div class="flex items-center justify-between mt-2">
+                            <div class="flex items-center bg-gray-100 rounded-full h-7 px-1">
+                                <button onclick="updateCartQuantity('${item.id}', -1)" class="w-6 text-slate-600 font-bold">-</button>
+                                <span class="w-5 text-center font-bold text-xs">${item.quantity}</span>
+                                <button onclick="updateCartQuantity('${item.id}', 1)" class="w-6 text-slate-600 font-bold">+</button>
+                            </div>
+                            <span class="font-bold text-slate-800 text-sm">${formatIDR(item.price * item.quantity)}</span>
+                        </div>
+                    </div>
+                    
+                    <button onclick="removeCartItem('${item.id}')" class="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors flex flex-col items-center">
+                        <span class="text-lg leading-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16">
+                            <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"/>
+                            </svg>
+                        </span>
+                        <span class="text-[10px]">Hapus</span>
+                    </button>
+                </div>
+            `).join('');
+
+            const { subtotal, tax, total } = getCartTotals();
+            document.getElementById('summary-subtotal').textContent = formatIDR(subtotal);
+            document.getElementById('summary-tax').textContent = formatIDR(tax);
+            document.getElementById('summary-total').textContent = formatIDR(total);
+        }
+
+        // --- Flow Actions ---
+        function checkout() {
+            if(cart.length === 0) {
+                showToast('Keranjang kosong!');
+                return;
+            }
+            const randomNum = Math.floor(Math.random() * 900) + 100;
+            document.getElementById('queue-number').textContent = `A-${randomNum}`;
+            switchScreen('confirmation');
+        }
+
+        function resetOrder() {
+            cart = [];
+            orderType = null;
+            activeCategory = 'Burger';
+            searchQuery = '';
+            
+            // Reset start screen buttons
+            document.getElementById('btn-dine-in').classList.remove('border-[#FFC72C]', 'bg-[#FFF9E5]', 'scale-[1.02]');
+            document.getElementById('btn-takeaway').classList.remove('border-[#FFC72C]', 'bg-[#FFF9E5]', 'scale-[1.02]');
+            document.querySelectorAll('.selected-badge, .check-icon').forEach(el => el.classList.add('hidden'));
+            
+            const continueBtn = document.getElementById('btn-continue-start');
+            continueBtn.disabled = true;
+            continueBtn.className = "w-full py-5 rounded-xl text-lg font-bold transition-all duration-300 flex items-center justify-center gap-2 bg-gray-200 text-gray-400 cursor-not-allowed opacity-50 mt-4";
+
+            switchScreen('start');
+        }
+
+        function finishOrder() {
+            resetOrder();
+        }
+
+        // --- Utilities ---
+        function showToast(message, totalText = null) {
+            const toast = document.getElementById('toast');
+            const toastTitle = document.getElementById('toast-title');
+            const toastSubtitle = document.getElementById('toast-subtitle');
+            const toastTotal = document.getElementById('toast-total');
+
+            toastTitle.textContent = message || 'Menu ditambahkan dalam pesanan';
+            toastSubtitle.textContent = 'Jumlah Total telah diperbaharui';
+            toastTotal.textContent = totalText || 'Rp 0';
+
+            toast.classList.remove('hidden');
+            toast.classList.add('flex');
+
+            clearTimeout(window.toastTimeout);
+            window.toastTimeout = setTimeout(() => {
+                toast.classList.add('hidden');
+                toast.classList.remove('flex');
+            }, 1000);
+        }
+
+        // Initialize empty state checks on load
+        window.onload = () => {
+            renderCategoryTabs();
+            renderMenuItems();
+        };
+    </script>
+</body>
+</html>
