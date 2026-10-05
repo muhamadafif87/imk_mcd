@@ -32,6 +32,9 @@
                     <h3 id="toast-title" class="font-bold text-[40px] leading-none text-slate-800 tracking-tight">Menu ditambahkan dalam pesanan</h3>
                     <p id="toast-subtitle" class="mt-5 text-[24px] font-light text-slate-600 leading-tight">Jumlah Total telah diperbaharui</p>
                     <p id="toast-total" class="mt-[30px] text-[32px] font-bold text-slate-900 leading-none">Rp 0</p>
+                    <button id="toast-undo" type="button" class="hidden mt-5 text-[18px] font-bold text-red-600 underline underline-offset-4 hover:text-red-700 transition-colors">
+                        Urungkan
+                    </button>
                 </div>
             </div>
         </div>
@@ -384,6 +387,7 @@
         let cart = [];
         let activeCategory = 'Burger';
         let searchQuery = '';
+        let lastCartSnapshot = null;
         
         // State Kustomisasi
         let selectedProduct = null;
@@ -396,6 +400,22 @@
             const total = subtotal + tax;
             const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
             return { subtotal, tax, total, totalItems };
+        }
+
+        function saveCartSnapshot() {
+            lastCartSnapshot = JSON.parse(JSON.stringify(cart));
+        }
+
+        function undoLastAction() {
+            if (!lastCartSnapshot) return;
+
+            cart = JSON.parse(JSON.stringify(lastCartSnapshot));
+            lastCartSnapshot = null;
+            updateCartUI();
+            if (currentScreen === 'cart') renderCartList();
+
+            const { total } = getCartTotals();
+            showToast('Perubahan dibatalkan', formatIDR(total));
         }
 
         // --- Data Menu ---
@@ -592,11 +612,13 @@
             addToCart(selectedProduct, 1, customSize, customSauce);
             goToMenu();
             const { total } = getCartTotals();
-            showToast('Menu ditambahkan dalam pesanan', formatIDR(total));
+            showToast('Menu ditambahkan dalam pesanan', formatIDR(total), () => undoLastAction());
         }
 
         // --- Cart Logic ---
         function addToCart(product, quantity, size, sauce) {
+            saveCartSnapshot();
+
             let finalPrice = product.basePrice;
             if (size === 'Large') finalPrice += 5000;
 
@@ -618,11 +640,13 @@
             }
             
             const { total } = getCartTotals();
-            if(currentScreen === 'menu') showToast('Menu ditambahkan dalam pesanan', formatIDR(total));
+            if(currentScreen === 'menu') showToast('Menu ditambahkan dalam pesanan', formatIDR(total), () => undoLastAction());
             updateCartUI();
         }
 
         function updateCartQuantity(id, delta) {
+            saveCartSnapshot();
+
             const item = cart.find(i => i.id === id);
             if (item) {
                 item.quantity += delta;
@@ -632,15 +656,16 @@
             }
 
             const { total } = getCartTotals();
-            showToast('Item dihapus', formatIDR(total));
+            showToast('Item dihapus', formatIDR(total), () => undoLastAction());
             updateCartUI();
             if(currentScreen === 'cart') renderCartList();
         }
 
         function removeCartItem(id) {
+            saveCartSnapshot();
             cart = cart.filter(i => i.id !== id);
             const { total } = getCartTotals();
-            showToast('Item berhasil dihapus', formatIDR(total));
+            showToast('Item berhasil dihapus', formatIDR(total), () => undoLastAction());
             updateCartUI();
             renderCartList();
         }
@@ -752,24 +777,44 @@
         }
 
         // --- Utilities ---
-        function showToast(message, totalText = null) {
+        function showToast(message, totalText = null, undoAction = null) {
             const toast = document.getElementById('toast');
+            const toastPanel = toast.querySelector('.toast-panel');
             const toastTitle = document.getElementById('toast-title');
             const toastSubtitle = document.getElementById('toast-subtitle');
             const toastTotal = document.getElementById('toast-total');
+            const toastUndo = document.getElementById('toast-undo');
 
             toastTitle.textContent = message || 'Menu ditambahkan dalam pesanan';
             toastSubtitle.textContent = 'Jumlah Total telah diperbaharui';
             toastTotal.textContent = totalText || 'Rp 0';
 
+            if (undoAction) {
+                toastUndo.classList.remove('hidden');
+                toastUndo.onclick = undoAction;
+            } else {
+                toastUndo.classList.add('hidden');
+                toastUndo.onclick = null;
+            }
+
+            toastPanel.classList.remove('is-closing');
             toast.classList.remove('hidden');
             toast.classList.add('flex');
+            toast.style.opacity = '1';
+            toast.style.transition = 'opacity 0.4s ease';
 
             clearTimeout(window.toastTimeout);
             window.toastTimeout = setTimeout(() => {
-                toast.classList.add('hidden');
-                toast.classList.remove('flex');
-            }, 1000);
+                toastPanel.classList.add('is-closing');
+                setTimeout(() => {
+                    toast.classList.add('hidden');
+                    toast.classList.remove('flex');
+                    toast.style.opacity = '1';
+                    toastPanel.classList.remove('is-closing');
+                    toastUndo.classList.add('hidden');
+                    toastUndo.onclick = null;
+                }, 800);
+            }, 2000);
         }
 
         // Initialize empty state checks on load

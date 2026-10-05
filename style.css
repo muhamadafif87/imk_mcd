@@ -20,11 +20,13 @@ body {
 @keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 @keyframes slideDownToast { from { transform: translateY(-100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 @keyframes toastModalIn { 0% { opacity: 0; transform: scale(0.92) translateY(18px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
+@keyframes toastModalOut { 0% { opacity: 1; transform: scale(1) translateY(0); } 100% { opacity: 0; transform: scale(0.92) translateY(18px); } }
 
 .animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
 .animate-slide-up { animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 .animate-toast { animation: slideDownToast 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 .toast-panel { animation: toastModalIn 0.2s ease-out forwards; }
+.toast-panel.is-closing { animation: toastModalOut 0.4s ease-in forwards; }
 
 /* Hide scrollbar */
 .hide-scrollbar::-webkit-scrollbar { display: none; }
